@@ -1,2 +1,1 @@
-"# TwitchRandomizer" 
-"# TwitchRandomizer" 
+"TwitchRandomizer" 
