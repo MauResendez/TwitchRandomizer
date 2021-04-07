@@ -1,0 +1,28 @@
+#stream
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 40px;
+}
+
+#loader
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 275px;
+}
+
+#error
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 250px;
+}
+
+#streamButtons
+{
+    padding-top: 8px !important;
+}
