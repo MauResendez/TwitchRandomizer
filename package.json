@@ -19,6 +19,7 @@
     "morgan": "^1.10.0",
     "node-fetch": "^2.6.1",
     "path": "^0.12.7",
+    "shuffle-array": "^1.0.1",
     "unique-random-array": "^2.0.0"
   }
 }

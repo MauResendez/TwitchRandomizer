@@ -15,8 +15,8 @@ if(process.env.NODE_ENV === 'development')
 }
 
 // Routes
-app.use('/results', require('./routes/results'));
-// app.use('/stream', require('./routes/stream'));
+app.use('/api/results', require('./routes/results'));
+app.use('/api/stream', require('./routes/stream'));
 
 const port = process.env.PORT || 5000;
 

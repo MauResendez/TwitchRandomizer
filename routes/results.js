@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const fetch = require('node-fetch');
+var shuffle = require('shuffle-array');
 
 async function getToken()
 {
@@ -11,7 +12,7 @@ async function getToken()
     return data;
 }
 
-router.get('/:game/:viewers', async (req, res) =>
+router.get('/game=:game&viewers=:viewers', async (req, res) =>
 {
     try
     {
@@ -34,32 +35,59 @@ router.get('/:game/:viewers', async (req, res) =>
 
         let streams = [];
 
-        let count = 5;
+        let count = 10;
 
         let cursor = '';
 
         while(count != 0)
         {
-            let response = await fetch(`${process.env.STREAMS_URL}?game_id=${gameID}&first=100` + (cursor ? `&after=${cursor}`: ``), { headers: headers });
-            let data = await response.json();
-
-            if(!data.pagination || data.data[0].viewer_count < 10)
+            if(count % 2 == 0)
             {
-                break;
+                let response = await fetch(`${process.env.STREAMS_URL}?game_id=${gameID}&first=100` + (cursor ? `&after=${cursor}`: ``), { headers: headers });
+                let data = await response.json();
+    
+                if(!data.pagination || data.data[0].viewer_count < 10)
+                {
+                    break;
+                }
+                else if(streams.length == 0)
+                {
+                    streams = data;
+                }
+                else
+                {
+                    streams.data = streams.data.concat(data.data);
+                }
+    
+                cursor = data.pagination.cursor;
             }
 
-            if(streams.length == 0)
-            {
-                streams = data;
-            }
-            else
-            {
-                streams.data = streams.data.concat(data.data);
-            }
-
-            cursor = data.pagination.cursor;
             --count;
         }
+
+        // console.log(viewers);
+
+        // if(viewers == -1)
+        // {
+        //     console.log(viewers);
+        //     console.log("HI");
+
+        //     let filtered_streams = [];
+
+        //     for(var i = 0; i < streams.data.length; ++i) 
+        //     {
+        //         if(streams.data[i].viewer_count <= viewers) 
+        //         {
+        //             filtered_streams.push(streams.data[i]);
+        //         }
+        //     }
+
+        //     res.json(filtered_streams);
+        // }
+        // else
+        // {
+        //     res.json(streams);
+        // }
 
         let filtered_streams = [];
 
@@ -72,6 +100,7 @@ router.get('/:game/:viewers', async (req, res) =>
         }
 
         res.json(filtered_streams);
+
     }
     catch (err)
     {
