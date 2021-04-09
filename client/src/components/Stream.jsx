@@ -9,36 +9,18 @@ import { makeStyles } from '@material-ui/core/styles';
 
 import Loader from "react-loader-spinner";
 
-// import { TwitchEmbed } from 'react-twitch-embed';
 import ReactTwitchEmbedVideo from "react-twitch-embed-video"
 
 import '../styles/Stream.css';
 
 const useStyles = makeStyles((theme) => 
-  ({
-    paper: 
-    {
-      marginTop: theme.spacing(8),
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-    },
-    avatar: 
-    {
-      margin: theme.spacing(1),
-      backgroundColor: theme.palette.secondary.main,
-    },
-    form: 
-    {
-      width: '100%', // Fix IE 11 issue.
-      marginTop: theme.spacing(1),
-    },
+({
     submit: 
     {
       background: '#9146ff !important',
       margin: '3px !important',
     },
-  }));
+}));
 
 function Stream(props) 
 {
@@ -49,6 +31,7 @@ function Stream(props)
 
     const [game, setGame] = useState(props.location.state.game);
     const [viewers, setViewers] = useState(props.location.state.viewers);
+    const [channel, setChannel] = useState(props.location.state.channel);
 
     const [{ stream, loading, error }, setState] = useState({ stream: null, loading: true, error: null });
 
@@ -58,13 +41,17 @@ function Stream(props)
         {
             try 
             {
-                const response = await axios.get(`/api/stream/game=${game}&viewers=${viewers}`);
-
-                // console.log(response);
-                // console.log(response.data);
-                // console.log(response.data.user_name);
-
-                setState({stream: response.data.user_name, loading: false, ...error });
+                if(channel)
+                {
+                    setState({ stream: channel, loading: false, ...error });
+                }
+                else
+                {
+                    const response = await axios.get(`/api/stream/game=${game}&viewers=${viewers}`);
+    
+                    setState({ stream: response.data.user_name, loading: false, ...error });
+                }
+                
             } 
             catch (err) 
             {
@@ -76,6 +63,7 @@ function Stream(props)
         {
             findStream(game, viewers);
         }
+
     }, [stream, loading, error])
 
     return (
@@ -93,7 +81,7 @@ function Stream(props)
 
             {!loading && 
                 <Container id="stream">
-                    <ReactTwitchEmbedVideo
+                    <ReactTwitchEmbedVideo autoFocus
                         autoplay
                         channel={stream}
                         layout="video-with-chat"
@@ -101,6 +89,8 @@ function Stream(props)
                         height="480"
                         onPlay={function noRefCheck(){}}
                         onReady={function noRefCheck(){}}
+                        muted="false"
+                        theme="dark"
                     />
                 </Container>
             }
@@ -113,7 +103,7 @@ function Stream(props)
 
             {!loading &&
                 <div id="streamButtons">
-                    <Link to={{pathname: `/stream`, state: { game: game, viewers: viewers }}} onClick={() => window.location.reload()}>
+                    <Link to={{pathname: `/stream`, state: { game: game, viewers: viewers, channel: null }}} onClick={() => window.location.reload()}>
                         <Button type="button" halfWidth variant="contained" color="primary" className={classes.submit}>Find Another Stream</Button>
                     </Link>
                     <Link to='/'>

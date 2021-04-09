@@ -1,0 +1,26 @@
+#loader
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 275px;
+}
+
+#error
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 250px;
+}
+        
+.pagination
+{
+  padding-top: 40px;
+}
+
+ul
+{
+  display: flex;
+  justify-content: center;
+}

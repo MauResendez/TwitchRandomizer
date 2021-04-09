@@ -41,11 +41,6 @@ router.get('/game=:game&viewers=:viewers', async (req, res) =>
         }
 
         let { game, viewers } = req.params;
-        
-        if(viewers == 'null')
-        {
-            viewers = 9999999; // Max value to get all streams
-        }
 
         let game_response = await fetch(`${process.env.GAMES_URL}?name=${game}`, { headers: headers });
 
