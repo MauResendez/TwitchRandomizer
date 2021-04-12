@@ -2,6 +2,7 @@ import React from 'react';
 import { AppBar, Toolbar, Typography } from '@material-ui/core';
 
 import '../styles/TitleAppBar.css';
+import { Link } from 'react-router-dom';
 
 function TitleAppBar() 
 {
@@ -9,11 +10,16 @@ function TitleAppBar()
         <div>
             <AppBar position="static" className="appBar">
                 <Toolbar>
-                    <a href="/">
+                    {/* <a href="/">
                         <Typography variant="h6">
                             Twitch Randomizer
                         </Typography>
-                    </a>
+                    </a> */}
+                    <Link to={{pathname: '/'}}>
+                        <Typography variant="h6">
+                            Twitch Randomizer
+                        </Typography>
+                    </Link>
                 </Toolbar>
             </AppBar>
         </div>

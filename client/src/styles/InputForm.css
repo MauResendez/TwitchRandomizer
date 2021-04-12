@@ -5,5 +5,10 @@
 
 #inputButtons
 {
-    padding-top: 5px !important;
+    padding-top: 15px !important;
+}
+
+#select
+{
+    padding-top: 15px !important;
 }

@@ -27,7 +27,7 @@ function filter(streams, viewers)
     return filtered_streams;
 }
 
-router.get('/game=:game&viewers=:viewers', async (req, res) =>
+router.get('/game=:game&viewers=:viewers&language=:language', async (req, res) =>
 {
     try
     {
@@ -40,11 +40,21 @@ router.get('/game=:game&viewers=:viewers', async (req, res) =>
             'Authorization': 'Bearer ' + accessToken
         }
 
-        let { game, viewers } = req.params;
+        let { game, viewers, language } = req.params;
+
+        if(language == "null")
+        {
+            language = '';
+        }
 
         let game_response = await fetch(`${process.env.GAMES_URL}?name=${game}`, { headers: headers });
 
         let game_data = await game_response.json();
+
+        if(game_data.data.length == 0) // If there is no game found, send empty array to display no stream found message
+        {
+            return res.json([]);
+        }
 
         let gameID = game_data.data[0].id;
 
@@ -61,23 +71,34 @@ router.get('/game=:game&viewers=:viewers', async (req, res) =>
         {
             if(count % 2 == 0)
             {
-                let response = await fetch(`${process.env.STREAMS_URL}?game_id=${gameID}&first=100` + (cursor ? `&after=${cursor}`: ``), { headers: headers });
+                let response = await fetch(`${process.env.STREAMS_URL}?game_id=${gameID}&first=100` + (language ? `&language=${language}` : '') + (cursor ? `&after=${cursor}`: ''), { headers: headers });
                 let data = await response.json();
 
-                if(!data.pagination || data.data[0].viewer_count < 10)
+                if(streams.length == 0)
+                {
+                    streams = data;
+                }
+                else if(data.data.length == 0)
                 {
                     break;
                 }
-                else if(streams.length == 0)
+                else if(data.data[0].viewer_count < 10)
                 {
-                    streams = data;
+                    break;
                 }
                 else
                 {
                     streams.data = streams.data.concat(data.data);
-                }
+                }            
 
-                cursor = data.pagination.cursor;
+                if(data.pagination.cursor)
+                {
+                    cursor = data.pagination.cursor;
+                }
+                else
+                {
+                    break;
+                }
             }
 
             --count;
@@ -101,23 +122,34 @@ router.get('/game=:game&viewers=:viewers', async (req, res) =>
             {
                 if(count % 2 == 0)
                 {
-                    let response = await fetch(`${process.env.STREAMS_URL}?game_id=${gameID}&first=100` + (cursor ? `&after=${cursor}`: ``), { headers: headers });
+                    let response = await fetch(`${process.env.STREAMS_URL}?game_id=${gameID}&first=100` + (language ? `&language=${language}` : '') + (cursor ? `&after=${cursor}`: ''), { headers: headers });
                     let data = await response.json();
 
-                    if(!data.pagination || data.data[0].viewer_count < 10)
+                    if(streams.length == 0)
+                    {
+                        streams = data;
+                    }
+                    else if(data.data.length == 0)
                     {
                         break;
                     }
-                    else if(streams.length == 0)
+                    else if(data.data[0].viewer_count < 10)
                     {
-                        streams = data;
+                        break;
                     }
                     else
                     {
                         streams.data = streams.data.concat(data.data);
-                    }
+                    }            
 
-                    cursor = data.pagination.cursor;
+                    if(data.pagination.cursor)
+                    {
+                        cursor = data.pagination.cursor;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
 
                 --count;

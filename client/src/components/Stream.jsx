@@ -6,10 +6,11 @@ import axios from 'axios';
 import Button from '@material-ui/core/Button';
 import { Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router'
 
 import Loader from "react-loader-spinner";
 
-import ReactTwitchEmbedVideo from "react-twitch-embed-video"
+import ReactTwitchEmbedVideo from "react-twitch-embed-video";
 
 import '../styles/Stream.css';
 
@@ -26,18 +27,17 @@ function Stream(props)
 {
     const classes = useStyles();
 
-    // const [game, setGame] = useState(props.match.params.game);
-    // const [viewers, setViewers] = useState(props.match.params.viewers);
+    const history = useHistory();
 
     const [game, setGame] = useState(props.location.state.game);
     const [viewers, setViewers] = useState(props.location.state.viewers);
+    const [language, setLanguage] = useState(props.location.state.language);
     const [channel, setChannel] = useState(props.location.state.channel);
-
     const [{ stream, loading, error }, setState] = useState({ stream: null, loading: true, error: null });
 
     useEffect(() => 
     {
-        const findStream = async (game, viewers) =>
+        const findStream = async (game, viewers, language) =>
         {
             try 
             {
@@ -47,11 +47,35 @@ function Stream(props)
                 }
                 else
                 {
-                    const response = await axios.get(`/api/stream/game=${game}&viewers=${viewers}`);
+                    const response = await axios.get(`/api/stream/game=${game}&viewers=${viewers}&language=${language}`);
     
                     setState({ stream: response.data.user_name, loading: false, ...error });
                 }
-                
+
+                // else if(localStorage.getItem('results') === null || localStorage.getItem('results') === [])
+                // {
+                //     console.log("HEY");
+
+                //     const response = await axios.get(`/api/results/game=${game}&viewers=${viewers}&language=${language}`);
+
+                //     let randomNumber = Math.floor(Math.random() * response.data.length);
+
+                //     localStorage.setItem('results', JSON.stringify(response.data));
+                //     localStorage.setItem('oldresults', JSON.stringify(JSON.parse(localStorage.getItem('results')).filter(result => result.type === "live")));
+
+                //     setState({ stream: JSON.parse(localStorage.getItem('results'))[randomNumber].user_name, loading: false, ...error });
+                // }
+                // else
+                // {
+                //     console.log("HI");
+
+                //     localStorage.setItem('results', JSON.stringify(JSON.parse(localStorage.getItem('results')).filter(result => result.type === "live")));
+                //     // localStorage.setItem('newresults', JSON.stringify(JSON.parse(localStorage.getItem('results')).filter(result => result.type === "live")));
+
+                //     let randomNumber = Math.floor(Math.random() * JSON.parse(localStorage.getItem('results')).length);
+
+                //     setState({ stream: JSON.parse(localStorage.getItem('results'))[randomNumber].user_name, loading: false, ...error });
+                // }
             } 
             catch (err) 
             {
@@ -61,7 +85,7 @@ function Stream(props)
           
         if(loading) 
         {
-            findStream(game, viewers);
+            findStream(game, viewers, language);
         }
 
     }, [stream, loading, error])
@@ -79,7 +103,7 @@ function Stream(props)
                 </div>
             }
 
-            {!loading && 
+            {!loading && stream &&
                 <Container id="stream">
                     <ReactTwitchEmbedVideo autoFocus
                         autoplay
@@ -96,17 +120,17 @@ function Stream(props)
             }
 
             {!stream && !loading &&
-                <div id="error">
+                <div id="streamError">
                     <h1>Error: No stream found</h1>
                 </div>
             }
 
             {!loading &&
                 <div id="streamButtons">
-                    <Link to={{pathname: `/stream`, state: { game: game, viewers: viewers, channel: null }}} onClick={() => window.location.reload()}>
+                    <Link to={{pathname: `/stream`, state: { game: game, viewers: viewers, language: language, channel: null }}} onClick={() => history.go(0)}>
                         <Button type="button" halfWidth variant="contained" color="primary" className={classes.submit}>Find Another Stream</Button>
                     </Link>
-                    <Link to='/'>
+                    <Link to={{pathname: `/`}}>
                         <Button type="button" halfWidth variant="contained" color="primary" className={classes.submit}>Home</Button>
                     </Link>
                 </div>

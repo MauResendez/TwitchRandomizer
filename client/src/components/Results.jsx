@@ -29,6 +29,7 @@ function Results(props)
 
     const [game, setGame] = useState(props.location.state.game);
     const [viewers, setViewers] = useState(props.location.state.viewers);
+    const [language, setLanguage] = useState(props.location.state.language);
 
     const [{ results, loading, error }, setState] = useState({ results: [], loading: true, error: null });
     const [currentPageResults, setCurrentPageResults] = useState([]);
@@ -42,7 +43,7 @@ function Results(props)
     const displayResults = results.slice(channelsVisited, channelsVisited + channelsPerPage).map((result) => 
     {
         return (
-            <GridListTile component={Link} to={{pathname: `/stream`, state: { game: game, viewers: viewers, channel: result.user_name }}}>
+            <GridListTile component={Link} to={{pathname: `/stream`, state: { game: game, viewers: viewers, language: language, channel: result.user_name }}}>
                 <img src={result.thumbnail_url} alt="Thumbnail"/>
                 <GridListTileBar
                     title={result.title}
@@ -58,10 +59,13 @@ function Results(props)
         {
             try 
             {
-                const response = await axios.get(`/api/results/game=${game}&viewers=${viewers}`);
+                const response = await axios.get(`/api/results/game=${game}&viewers=${viewers}&language=${language}`);
+
+                console.log(response.data);
 
                 setState({ results: response.data, loading: false, ...error });
                 setCurrentPageResults(response.data.slice(channelsVisited, channelsVisited + channelsPerPage));
+                // setPageCount(Math.ceil(response.data.length / channelsPerPage));
             } 
             catch (err) 
             {
@@ -89,7 +93,13 @@ function Results(props)
                     </div>
                 }
 
-                {!loading &&
+                {results.length == 0 && !loading &&
+                    <div id="resultsError">
+                        <h1>Error: No results found</h1>
+                    </div>
+                }
+
+                {results.length != 0 && !loading &&
                     <Container style={{paddingTop: "50px", paddingBottom: "50px"}}>
                         <GridList container cols={5}>
                             {displayResults}
@@ -100,11 +110,6 @@ function Results(props)
                     </Container>
                 }
 
-                {!loading && !results &&
-                    <div id="error">
-                        <h1>Error: No stream found</h1>
-                    </div>
-                }
             </div>
     )
 }
