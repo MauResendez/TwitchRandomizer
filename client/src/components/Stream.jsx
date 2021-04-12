@@ -127,7 +127,7 @@ function Stream(props)
 
             {!loading &&
                 <div id="streamButtons">
-                    <Link to={{pathname: `/stream`, state: { game: game, viewers: viewers, language: language, channel: null }}} onClick={() => window.location.reload()}>
+                    <Link to={{state: { game: game, viewers: viewers, language: language, channel: null }}} onClick={() => window.location.reload()}>
                         <Button type="button" halfWidth variant="contained" color="primary" className={classes.submit}>Find Another Stream</Button>
                     </Link>
                     <Link to={{pathname: `/`}}>
