@@ -173,4 +173,31 @@ router.get('/game=:game&viewers=:viewers&language=:language', async (req, res) =
     }
 });
 
+router.get('/streamer=:streamer', async (req, res) => 
+{
+    let tokenData = await getToken();
+
+    let accessToken = tokenData.access_token;
+
+    let headers = {
+        'Client-ID': process.env.CLIENT_ID,
+        'Authorization': 'Bearer ' + accessToken
+    }
+
+    let { streamer } = req.params;
+
+    // // let response = await fetch(`${process.env.STREAMS_URL}?game_id=${gameID}&first=100` + (language ? `&language=${language}` : '') + (cursor ? `&after=${cursor}`: ''), { headers: headers });
+    let response = await fetch(`${process.env.STREAMS_URL}?user_login=${streamer}`, { headers: headers });
+    let data = await response.json();
+
+    if(data.data[0].type == live)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+});
+
 module.exports = router;

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import Button from '@material-ui/core/Button';
 import { Container } from '@material-ui/core';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
@@ -14,19 +13,8 @@ import ReactPaginate from 'react-paginate';
 
 import '../styles/Results.css';
 
-const useStyles = makeStyles((theme) => 
-({
-    submit: 
-    {
-        background: '#9146ff !important',
-        margin: '3px !important',
-    },
-}));
-
 function Results(props) 
 {
-    const classes = useStyles();
-
     const [game, setGame] = useState(props.location.state.game);
     const [viewers, setViewers] = useState(props.location.state.viewers);
     const [language, setLanguage] = useState(props.location.state.language);
@@ -83,7 +71,7 @@ function Results(props)
     return (
             <div>
                 {loading && 
-                    <div id="loader">
+                    <div id="resultsLoader">
                         <Loader
                             type="Puff"
                             color="#00BFFF"

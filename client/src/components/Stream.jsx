@@ -14,19 +14,8 @@ import ReactTwitchEmbedVideo from "react-twitch-embed-video";
 
 import '../styles/Stream.css';
 
-const useStyles = makeStyles((theme) => 
-({
-    submit: 
-    {
-      background: '#9146ff !important',
-      margin: '3px !important',
-    },
-}));
-
 function Stream(props) 
 {
-    const classes = useStyles();
-
     const history = useHistory();
 
     const [game, setGame] = useState(props.location.state.game);
@@ -91,9 +80,9 @@ function Stream(props)
     }, [stream, loading, error])
 
     return (
-        <Container>
+        <div>
             {loading && 
-                <div id="loader">
+                <div id="streamLoader">
                     <Loader
                         type="Puff"
                         color="#00BFFF"
@@ -104,7 +93,7 @@ function Stream(props)
             }
 
             {!loading && stream &&
-                <Container id="stream">
+                <div id="stream">
                     <ReactTwitchEmbedVideo autoFocus
                         autoplay
                         channel={stream}
@@ -113,10 +102,9 @@ function Stream(props)
                         height="480"
                         onPlay={function noRefCheck(){}}
                         onReady={function noRefCheck(){}}
-                        muted="false"
                         theme="dark"
                     />
-                </Container>
+                </div>
             }
 
             {!stream && !loading &&
@@ -128,15 +116,15 @@ function Stream(props)
             {!loading &&
                 <div id="streamButtons">
                     <Link to={{state: { game: game, viewers: viewers, language: language, channel: null }}} onClick={() => window.location.reload()}>
-                        <Button type="button" halfWidth variant="contained" color="primary" className={classes.submit}>Find Another Stream</Button>
+                        <Button type="button" halfWidth variant="contained" color="primary" className="submit">Find Another Stream</Button>
                     </Link>
                     <Link to={{pathname: `/`}}>
-                        <Button type="button" halfWidth variant="contained" color="primary" className={classes.submit}>Home</Button>
+                        <Button type="button" halfWidth variant="contained" color="primary" className="submit">Home</Button>
                     </Link>
                 </div>
             }
             
-        </Container>
+        </div>
     )
 }
 

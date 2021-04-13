@@ -38,20 +38,10 @@ const useStyles = makeStyles((theme) =>
     flexDirection: 'column',
     alignItems: 'center',
   },
-  avatar: 
-  {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
   form: 
   {
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
-  },
-  submit: 
-  {
-    background: '#9146ff !important',
-    margin: '3px !important',
   },
 }));
 
@@ -154,8 +144,8 @@ function InputForm()
                         </Select>
                       </div>
                       <div id="inputButtons">
-                        <Button type="submit" onClick={findRandomStream} halfWidth variant="contained" color="primary" className={classes.submit}>Find A Random Stream</Button>
-                        <Button onClick={findResults} halfWidth variant="contained" color="primary" className={classes.submit}>View Results</Button>
+                        <Button type="submit" onClick={findRandomStream} halfWidth variant="contained" color="primary" className="submit">Find A Random Stream</Button>
+                        <Button onClick={findResults} halfWidth variant="contained" color="primary" className="submit">View Results</Button>
                       </div>
                   </form>
               </div>

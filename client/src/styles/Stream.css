@@ -1,28 +1,39 @@
+.submit
+{
+    background: #9146ff !important;
+    margin: 3px !important;
+}
+
 #stream
 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: 40px;
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transform: -webkit-translate(-50%, -50%);
+    transform: -moz-translate(-50%, -50%);
+    transform: -ms-translate(-50%, -50%);
 }
 
-#loader
+#streamLoader, #streamError
 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: 275px;
-}
-
-#streamError
-{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding-top: 275px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transform: -webkit-translate(-50%, -50%);
+    transform: -moz-translate(-50%, -50%);
+    transform: -ms-translate(-50%, -50%);
 }
 
 #streamButtons
-{
+{   
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transform: -webkit-translate(-50%, -50%);
+    transform: -moz-translate(-50%, -50%);
+    transform: -ms-translate(-50%, -50%);
     padding-top: 8px !important;
 }
