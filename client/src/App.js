@@ -1,20 +1,18 @@
 import './App.css';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import useEffect from 'react';
 
 import TitleAppBar from './components/TitleAppBar';
 import InputForm from './components/InputForm';
 import Stream from './components/Stream';
 import Results from './components/Results';
+import ProtectedRoute from './components/ProtectedRoute';
+import NotFound from './components/NotFound';
 
 function App() 
 {
-  const deleteStorage = () =>
-  {
-    localStorage.clear();
-  }
-
   return (
     <ThemeProvider>
       <CssBaseline style={{height: '100vh'}}>
@@ -22,9 +20,15 @@ function App()
           <div className="container">
             <Router>
               <TitleAppBar/>
-              <Route exact path="/" render={deleteStorage} component={InputForm}/>
-              <Route exact path="/stream" component={Stream}/>
-              <Route exact path="/results" component={Results} />
+              <Switch>
+                <Route exact path="/" component={InputForm}/>
+                <ProtectedRoute exact path="/stream" component={props => <Stream {...props}/>} />
+                <ProtectedRoute exact path="/results" component={props => <Results {...props}/>} />
+                <Route component={NotFound} />
+
+                {/* <Route exact path="/stream" component={Stream}/> */}
+                {/* <Route exact path="/results" component={Results} /> */}
+              </Switch>
             </Router>
           </div>   
         </div>

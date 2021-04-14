@@ -7,7 +7,7 @@
 #stream
 {
     position: absolute;
-    top: 45%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     transform: -webkit-translate(-50%, -50%);
@@ -29,7 +29,7 @@
 #streamButtons
 {   
     position: absolute;
-    top: 80%;
+    top: 85%;
     left: 50%;
     transform: translate(-50%, -50%);
     transform: -webkit-translate(-50%, -50%);

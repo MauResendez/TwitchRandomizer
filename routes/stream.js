@@ -112,7 +112,7 @@ router.get('/game=:game&viewers=:viewers&language=:language', async (req, res) =
 
         if(filtered_streams.length != 0) // If we found one, send the data
         {
-            res.json(randomStream());
+            return res.json(randomStream());
         }
         else // Else, we have to continue searching for more streams until we have streams that have equal or lower the given viewers.
         {
@@ -159,7 +159,7 @@ router.get('/game=:game&viewers=:viewers&language=:language', async (req, res) =
 
             let randomStream = uniqueRandomArray(filtered_streams);
 
-            res.json(randomStream());
+            return res.json(randomStream());
         }
     }
     catch (err)
@@ -173,7 +173,7 @@ router.get('/game=:game&viewers=:viewers&language=:language', async (req, res) =
     }
 });
 
-router.get('/streamer=:streamer', async (req, res) => 
+router.get('/streamer=:streamer&game=:game', async (req, res) => 
 {
     let tokenData = await getToken();
 
@@ -186,17 +186,20 @@ router.get('/streamer=:streamer', async (req, res) =>
 
     let { streamer } = req.params;
 
-    // // let response = await fetch(`${process.env.STREAMS_URL}?game_id=${gameID}&first=100` + (language ? `&language=${language}` : '') + (cursor ? `&after=${cursor}`: ''), { headers: headers });
     let response = await fetch(`${process.env.STREAMS_URL}?user_login=${streamer}`, { headers: headers });
     let data = await response.json();
 
-    if(data.data[0].type == live)
+    console.log(streamer);
+
+    console.log(data);
+
+    if(data.data.length !== 0 && data.data[0].type === 'live' && data.data[0].game_name)
     {
-        return true;
+        return res.json(true);
     }
     else
     {
-        return false;
+        return res.json(false);
     }
 });
 

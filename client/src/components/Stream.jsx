@@ -5,8 +5,6 @@ import axios from 'axios';
 
 import Button from '@material-ui/core/Button';
 import { Container } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router'
 
 import Loader from "react-loader-spinner";
 
@@ -16,13 +14,23 @@ import '../styles/Stream.css';
 
 function Stream(props) 
 {
-    const history = useHistory();
+    // const [game, setGame] = useState(props.location.state.game);
+    // const [viewers, setViewers] = useState(props.location.state.viewers);
+    // const [language, setLanguage] = useState(props.location.state.language);
+    // const [channel, setChannel] = useState(props.location.state.channel);
 
-    const [game, setGame] = useState(props.location.state.game);
-    const [viewers, setViewers] = useState(props.location.state.viewers);
-    const [language, setLanguage] = useState(props.location.state.language);
-    const [channel, setChannel] = useState(props.location.state.channel);
+    const [game, setGame] = useState(localStorage.getItem('game'));
+    const [viewers, setViewers] = useState(localStorage.getItem('viewers'));
+    const [language, setLanguage] = useState(localStorage.getItem('language'));
+    const [channel, setChannel] = useState(localStorage.getItem('channel'));
     const [{ stream, loading, error }, setState] = useState({ stream: null, loading: true, error: null });
+
+    function Refresh() 
+    {
+        localStorage.removeItem('channel');
+        setChannel(null);
+        window.location.reload();
+    }
 
     useEffect(() => 
     {
@@ -34,36 +42,45 @@ function Stream(props)
                 {
                     setState({ stream: channel, loading: false, ...error });
                 }
+                else if(localStorage.getItem('results') === null || localStorage.getItem('results') === [])
+                {
+                    const response = await axios.get(`/api/results/game=${game}&viewers=${viewers}&language=${language}`);
+
+                    let randomNumber = Math.floor(Math.random() * response.data.length);
+
+                    localStorage.setItem('results', JSON.stringify(response.data));
+
+                    setState({ stream: JSON.parse(localStorage.getItem('results'))[randomNumber].user_login, loading: false, ...error });
+                }
                 else
                 {
-                    const response = await axios.get(`/api/stream/game=${game}&viewers=${viewers}&language=${language}`);
-    
-                    setState({ stream: response.data.user_name, loading: false, ...error });
+                    let randomNumber;
+                    
+                    let isLiveAndOnGame = false;
+
+                    while(isLiveAndOnGame === false)
+                    {
+                        randomNumber = Math.floor(Math.random() * JSON.parse(localStorage.getItem('results')).length);
+
+                        let results = JSON.parse(localStorage.getItem('results'));
+
+                        isLiveAndOnGame = await axios.get(`/api/stream/streamer=${results[randomNumber].user_login}&game=${game}`); 
+
+                        if(isLiveAndOnGame === false)
+                        {
+                            console.log("False");
+                            results.splice(randomNumber, 1);
+                            localStorage.setItem('results', JSON.stringify(results));
+                        }
+                    }
+
+                    setState({ stream: JSON.parse(localStorage.getItem('results'))[randomNumber].user_login, loading: false, ...error });
                 }
-
-                // else if(localStorage.getItem('results') === null || localStorage.getItem('results') === [])
-                // {
-                //     console.log("HEY");
-
-                //     const response = await axios.get(`/api/results/game=${game}&viewers=${viewers}&language=${language}`);
-
-                //     let randomNumber = Math.floor(Math.random() * response.data.length);
-
-                //     localStorage.setItem('results', JSON.stringify(response.data));
-                //     localStorage.setItem('oldresults', JSON.stringify(JSON.parse(localStorage.getItem('results')).filter(result => result.type === "live")));
-
-                //     setState({ stream: JSON.parse(localStorage.getItem('results'))[randomNumber].user_name, loading: false, ...error });
-                // }
                 // else
                 // {
-                //     console.log("HI");
-
-                //     localStorage.setItem('results', JSON.stringify(JSON.parse(localStorage.getItem('results')).filter(result => result.type === "live")));
-                //     // localStorage.setItem('newresults', JSON.stringify(JSON.parse(localStorage.getItem('results')).filter(result => result.type === "live")));
-
-                //     let randomNumber = Math.floor(Math.random() * JSON.parse(localStorage.getItem('results')).length);
-
-                //     setState({ stream: JSON.parse(localStorage.getItem('results'))[randomNumber].user_name, loading: false, ...error });
+                //     const response = await axios.get(`/api/stream/game=${game}&viewers=${viewers}&language=${language}`);
+    
+                //     setState({ stream: response.data.user_name, loading: false, ...error });
                 // }
             } 
             catch (err) 
@@ -94,7 +111,8 @@ function Stream(props)
 
             {!loading && stream &&
                 <div id="stream">
-                    <ReactTwitchEmbedVideo autoFocus
+                    <ReactTwitchEmbedVideo 
+                        autoFocus
                         autoplay
                         channel={stream}
                         layout="video-with-chat"
@@ -115,7 +133,7 @@ function Stream(props)
 
             {!loading &&
                 <div id="streamButtons">
-                    <Link to={{state: { game: game, viewers: viewers, language: language, channel: null }}} onClick={() => window.location.reload()}>
+                    <Link to={{pathname: `/stream`}} onClick={Refresh}>
                         <Button type="button" halfWidth variant="contained" color="primary" className="submit">Find Another Stream</Button>
                     </Link>
                     <Link to={{pathname: `/`}}>
@@ -123,7 +141,6 @@ function Stream(props)
                     </Link>
                 </div>
             }
-            
         </div>
     )
 }

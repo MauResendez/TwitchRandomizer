@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -6,7 +6,6 @@ import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
-import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
@@ -55,16 +54,28 @@ function InputForm()
     const [randomSubmitted, setRandomSubmitted] = useState(false);
     const [resultsSubmitted, setResultsSubmitted] = useState(false);
 
+    useEffect(() =>
+    {
+      localStorage.clear();
+    }, []);
+
+    useEffect(() =>
+    {
+      localStorage.setItem('game', game);
+      localStorage.setItem('viewers', viewers);
+      localStorage.setItem('language', language);
+    }, [game, viewers, language]);
+
     const findRandomStream = (event) => 
     {
       event.preventDefault();
 
-      if(game && viewers == '')
+      if(game && viewers === '')
       {
         setViewers(9999999);
       }
 
-      if(language == 'Select...')
+      if(language === 'Select...')
       {
         setLanguage(null);
       }
@@ -79,33 +90,36 @@ function InputForm()
     {
       event.preventDefault();
 
-      if(game && viewers == '')
+      if(game && viewers === '')
       {
         setViewers(9999999);
       }
 
-      if(language == 'Select...')
+      if(language === 'Select...')
       {
         setLanguage(null);
       }
       
       if(game)
       {
+        localStorage.setItem('game', game);
+        localStorage.setItem('viewers', viewers);
+        localStorage.setItem('language', language);
         setResultsSubmitted(true);
       }
     }
 
     const checkViewersInput = (event) => 
     {
-      if(event.target.value < 10 && event.target.value != "")
+      if(event.target.value < 10 && event.target.value !== "")
       {
         setViewers(10);
       }
-      else if(event.target.value > 9999999 && event.target.value != "")
+      else if(event.target.value > 9999999 && event.target.value !== "")
       {
         setViewers(9999999);
       }
-      else if(event.target.value >= 10 && event.target.value != "")
+      else if(event.target.value >= 10 && event.target.value !== "")
       {
         setViewers(event.target.value);
       }
