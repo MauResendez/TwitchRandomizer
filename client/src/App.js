@@ -2,7 +2,6 @@ import './App.css';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { CssBaseline } from '@material-ui/core';
 import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import useEffect from 'react';
 
 import TitleAppBar from './components/TitleAppBar';
 import InputForm from './components/InputForm';
