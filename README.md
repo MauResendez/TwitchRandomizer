@@ -1,1 +1,1 @@
-Demo: https://twitchrandomizer.herokuapp.com
+Demo: https://twitchrandom.herokuapp.com
