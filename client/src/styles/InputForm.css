@@ -18,6 +18,11 @@
     margin: 3px !important;
 }
 
+#formIntro
+{
+    padding-bottom: 10px;
+}
+
 #resultsButton, #streamButton
 {
     background-color: '#9146ff' !important;
