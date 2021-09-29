@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 
 import axios from 'axios';
 
 import Button from '@material-ui/core/Button';
 import { Container } from '@material-ui/core';
+import { Grid } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 import Loader from "react-loader-spinner";
 
@@ -12,13 +14,17 @@ import ReactTwitchEmbedVideo from "react-twitch-embed-video";
 
 import '../styles/Stream.css';
 
-function Stream(props) 
-{
-    // const [game, setGame] = useState(props.location.state.game);
-    // const [viewers, setViewers] = useState(props.location.state.viewers);
-    // const [language, setLanguage] = useState(props.location.state.language);
-    // const [channel, setChannel] = useState(props.location.state.channel);
+const useStyles = makeStyles((theme) => 
+({
+  stream: 
+  {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1),
+  },
+}));
 
+function Stream() 
+{
     const [game, setGame] = useState(localStorage.getItem('game'));
     const [viewers, setViewers] = useState(localStorage.getItem('viewers'));
     const [language, setLanguage] = useState(localStorage.getItem('language'));
@@ -38,12 +44,13 @@ function Stream(props)
         {
             try 
             {
-                if(channel)
+                if(channel) // If you clicked on a stream from the Results page, it'll set up the stream to be that one
                 {
                     setState({ stream: channel, loading: false, ...error });
                 }
-                else if(localStorage.getItem('results') === null || localStorage.getItem('results') === [])
-                {
+                else if(localStorage.getItem('results') === null || localStorage.getItem('results') === []) // If you first started searching, 
+                {                                                                                           // it'll retrieve results and pick a random stream from there
+
                     const response = await axios.get(`/api/results/game=${game}&viewers=${viewers}&language=${language}`);
 
                     let randomNumber = Math.floor(Math.random() * response.data.length);
@@ -52,23 +59,21 @@ function Stream(props)
 
                     setState({ stream: JSON.parse(localStorage.getItem('results'))[randomNumber].user_login, loading: false, ...error });
                 }
-                else
+                else // If you already have results, it'll go back to the results array and choose another stream from there
                 {
                     let randomNumber;
-                    
                     let isLiveAndOnGame = false;
 
-                    while(isLiveAndOnGame === false)
+                    while(isLiveAndOnGame === false) // Have a loop in case some streams from the array have stop streaming
                     {
                         randomNumber = Math.floor(Math.random() * JSON.parse(localStorage.getItem('results')).length);
 
                         let results = JSON.parse(localStorage.getItem('results'));
 
-                        isLiveAndOnGame = await axios.get(`/api/stream/streamer=${results[randomNumber].user_login}&game=${game}`); 
-
-                        if(isLiveAndOnGame === false)
+                        isLiveAndOnGame = await axios.get(`/api/stream/streamer=${results[randomNumber].user_login}&game=${game}`); // Checks to see if you found a streamer
+                                                                                                                                    // That's live and on the game you're searching for
+                        if(isLiveAndOnGame === false) // If you found a streamer that's not live anymore, remove the streamer from the results and start finding another one
                         {
-                            console.log("False");
                             results.splice(randomNumber, 1);
                             localStorage.setItem('results', JSON.stringify(results));
                         }
@@ -76,12 +81,6 @@ function Stream(props)
 
                     setState({ stream: JSON.parse(localStorage.getItem('results'))[randomNumber].user_login, loading: false, ...error });
                 }
-                // else
-                // {
-                //     const response = await axios.get(`/api/stream/game=${game}&viewers=${viewers}&language=${language}`);
-    
-                //     setState({ stream: response.data.user_name, loading: false, ...error });
-                // }
             } 
             catch (err) 
             {
@@ -89,7 +88,7 @@ function Stream(props)
             }; 
         }
           
-        if(loading) 
+        if(loading) // If loading state is true (When you're first starting searching)
         {
             findStream(game, viewers, language);
         }
@@ -97,51 +96,51 @@ function Stream(props)
     }, [stream, loading, error])
 
     return (
-        <div>
-            {loading && 
-                <div id="streamLoader">
-                    <Loader
-                        type="Puff"
-                        color="#00BFFF"
-                        height={100}
-                        width={100}
-                    />
-                </div>
-            }
+        <Grid container spacing={0} direction='column' alignItems='center' justify='center' style={{ minHeight: '90vh' }}>  
+            <Container component='main' center>
+                {loading && 
+                    <div id="streamLoader">
+                        <Loader
+                            type="Puff"
+                            color="#00BFFF"
+                            height={100}
+                            width={100}
+                        />
+                    </div>
+                }
 
-            {!loading && stream &&
-                <div id="stream">
-                    <ReactTwitchEmbedVideo 
-                        autoFocus
-                        autoplay
-                        channel={stream}
-                        layout="video-with-chat"
-                        width="940"
-                        height="480"
-                        onPlay={function noRefCheck(){}}
-                        onReady={function noRefCheck(){}}
-                        theme="dark"
-                    />
-                </div>
-            }
+                {stream && !loading &&
+                    <div id="stream">
+                        <ReactTwitchEmbedVideo 
+                            autoFocus
+                            autoplay
+                            channel={stream}
+                            layout="video-with-chat"
+                            onPlay={function noRefCheck(){}}
+                            onReady={function noRefCheck(){}}
+                            theme="dark"
+                        />
+                    </div>
+                }
 
-            {!stream && !loading &&
-                <div id="streamError">
-                    <h1>Error: No stream found</h1>
-                </div>
-            }
+                {!stream && !loading &&
+                    <div id="streamError">
+                        <h1>Error: No stream found</h1>
+                    </div>
+                }
 
-            {!loading &&
-                <div id="streamButtons">
-                    <Link to={{pathname: `/stream`}} onClick={Refresh}>
-                        <Button type="button" halfWidth variant="contained" color="primary" className="submit">Find Another Stream</Button>
-                    </Link>
-                    <Link to={{pathname: `/`}}>
-                        <Button type="button" halfWidth variant="contained" color="primary" className="submit">Home</Button>
-                    </Link>
-                </div>
-            }
-        </div>
+                {!loading &&
+                    <div id="streamButtons">
+                        <Link to={{pathname: `/stream`}} onClick={Refresh}>
+                            <Button type="button" halfWidth variant="contained" color="primary" className="submit">Find Another Stream</Button>
+                        </Link>
+                        <Link to={{pathname: `/`}}>
+                            <Button type="button" halfWidth variant="contained" color="primary" className="submit">Home</Button>
+                        </Link>
+                    </div>
+                } 
+            </Container>
+        </Grid>
     )
 }
 

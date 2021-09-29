@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
 
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
 import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+
+import { data } from '../data/data.js'
 
 import { Redirect } from 'react-router-dom';
 
@@ -18,10 +20,10 @@ import '../styles/InputForm.css';
 function Copyright() 
 {
     return (
-      <Typography variant="body2" color="textSecondary" align="center">
+      <Typography variant='body2' color='textSecondary' align='center'>
         {'Copyright © '}
-        <Link color="inherit" href="https://material-ui.com/">
-          Twitch Randomizer
+        <Link color='inherit'>
+          Twitch Random
         </Link>{' '}
         {new Date().getFullYear()}
       </Typography>
@@ -30,13 +32,6 @@ function Copyright()
   
 const useStyles = makeStyles((theme) => 
 ({
-  paper: 
-  {
-    marginTop: theme.spacing(8),
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
   form: 
   {
     width: '100%', // Fix IE 11 issue.
@@ -49,17 +44,19 @@ function InputForm()
     const classes = useStyles();
 
     const [game, setGame] = useState('');
-    const [viewers, setViewers] = useState('');
+    const [inputGame, setInputGame] = useState('');
+    const [open, setOpen] = useState(false)
+    const [viewers, setViewers] = useState(9999999);
     const [language, setLanguage] = useState('Select...');
     const [randomSubmitted, setRandomSubmitted] = useState(false);
     const [resultsSubmitted, setResultsSubmitted] = useState(false);
 
-    useEffect(() =>
+    useEffect(() => // When starting/refreshing the page, remove all previous data so the user can fill in the data to their liking
     {
       localStorage.clear();
     }, []);
 
-    useEffect(() =>
+    useEffect(() => // Everytime one of the three variables has been changed, update the localstorage to their latest value
     {
       localStorage.setItem('game', game);
       localStorage.setItem('viewers', viewers);
@@ -69,11 +66,6 @@ function InputForm()
     const findRandomStream = (event) => 
     {
       event.preventDefault();
-
-      if(game && viewers === '')
-      {
-        setViewers(9999999);
-      }
 
       if(language === 'Select...')
       {
@@ -90,11 +82,6 @@ function InputForm()
     {
       event.preventDefault();
 
-      if(game && viewers === '')
-      {
-        setViewers(9999999);
-      }
-
       if(language === 'Select...')
       {
         setLanguage(null);
@@ -102,67 +89,94 @@ function InputForm()
       
       if(game)
       {
-        localStorage.setItem('game', game);
-        localStorage.setItem('viewers', viewers);
-        localStorage.setItem('language', language);
         setResultsSubmitted(true);
       }
     }
 
     const checkViewersInput = (event) => 
     {
-      if(event.target.value < 10 && event.target.value !== "")
+      if(event.target.value < 10 && event.target.value !== '') // If the viewer amount is set less than 10, then set it to 10
       {
         setViewers(10);
       }
-      else if(event.target.value > 9999999 && event.target.value !== "")
+      else if(event.target.value > 9999999 && event.target.value !== '') // If the viewer amount is set higher than 9999999, then set it to 9999999 (Max Amount)
       {
         setViewers(9999999);
       }
-      else if(event.target.value >= 10 && event.target.value !== "")
+      else if(event.target.value >= 10 && event.target.value !== '') // If the viewer count is equal or more than 10, set the viewers to the number
       {
         setViewers(event.target.value);
       }
-      else
+      else // If the user left it blank, assume that they want to view any streamer, no matter the viewer count
       {
-        event.target.value = '';
-        setViewers('');
+        setViewers(9999999);
       }
     }
 
-    return (
-        <Grid container spacing={0} direction="column" alignItems="center" justify="center" style={{ minHeight: '85vh' }}>  
-            { randomSubmitted && <Redirect push to={{pathname: `/stream`, state: { game: game, viewers: viewers, language: language }}}/> }
-            { resultsSubmitted && <Redirect push to={{pathname: `/results`, state: { game: game, viewers: viewers, language: language }}}/> }
+    const games = data
 
-            <Container component="main" maxWidth="xs" center>
-              <CssBaseline />
-              <div className={classes.paper}>
-                  <Typography component="h1" variant="h5">Twitch Randomizer</Typography>
-                  <form className={classes.form} onSubmit={findRandomStream}>
-                      <TextField variant="outlined" type="text" margin="normal" required fullWidth id="game" label="Game" name="game" onChange={e => setGame(e.target.value)} autoFocus/>
-                      <TextField variant="outlined" type="number" margin="normal" InputProps={{ inputProps: { min: "10", max: "9999999" } }} fullWidth id="viewers" label="Max Number of Viewers (Minimum: 10)" name="viewers" value={viewers} onChange={e => setViewers(e.target.value)} onBlur={checkViewersInput}/>
-                      <div id="select">
-                        <Select native variant="outlined" margin="normal" fullWidth id="language" label="Language" name="language" onChange={e => setLanguage(e.target.value)}>
-                          <option value={"Select..."}>Select...</option>
-                          <option value={"en"}>English</option>
-                          <option value={"es"}>Español (Spanish)</option>
-                          <option value={"fr"}>Français (French)</option>
-                          <option value={"de"}>Deutsch (German)</option>
-                          <option value={"ja"}>日本語 (Japanese)</option>
-                          <option value={"it"}>Italiano (Italian)</option>
-                          <option value={"pt"}>Português (Portuguese)</option>
-                          <option value={"ru"}>русский (Russian)</option>
-                          <option value={"nl"}>Nederlands (Dutch)</option>
-                          <option value={"tr"}>Türkçe (Turkish)</option>
-                        </Select>
-                      </div>
-                      <div id="inputButtons">
-                        <Button type="submit" onClick={findRandomStream} halfWidth variant="contained" color="primary" className="submit">Find A Random Stream</Button>
-                        <Button onClick={findResults} halfWidth variant="contained" color="primary" className="submit">View Results</Button>
-                      </div>
-                  </form>
-              </div>
+    return (
+        <Grid container spacing={0} direction='column' alignItems='center' justify='center' style={{ minHeight: '100vh' }}>  
+            { randomSubmitted && <Redirect push to={{pathname: `/stream`}}/> }
+            { resultsSubmitted && <Redirect push to={{pathname: `/results`}}/> }
+
+            <div id="formIntro">
+              <Typography variant='h5'><strong>Twitch Random</strong></Typography>
+              <Typography>Find new streamers to watch based on your language and favorite games</Typography>
+            </div>
+            
+            <Container component='main' maxWidth='xs' center>  
+              <form className={classes.form} onSubmit={findRandomStream}>
+                  <Autocomplete
+                    open={open}
+                    onOpen={() => 
+                    {
+                      if(inputGame) 
+                      {
+                        setOpen(true);
+                      }
+                    }}
+                    onClose={() => setOpen(false)}
+                    value={game}
+                    onChange={(event, game) => 
+                    {
+                      setGame(game);
+                    }}
+                    inputValue={inputGame}
+                    onInputChange={(event, inputGame) => 
+                    {
+                      setInputGame(inputGame);
+
+                      if (!inputGame) 
+                      {
+                        setOpen(false);
+                      }
+                    }}
+                    options={games}
+                    freeSolo
+                    renderInput={(params) => <TextField {...params} variant='outlined' required id='game' label='Game' name='game' autoFocus/>}
+                  />
+                  <TextField variant='outlined' type='number' margin='normal' InputProps={{ inputProps: { min: '10', max: '9999999' } }} fullWidth id='viewers' label='Number of Viewers (Minimum: 10)' name='viewers' onChange={e => setViewers(e.target.value)} onBlur={checkViewersInput}/>
+                  <div id='select'>
+                    <Select native variant='outlined' margin='normal' fullWidth id='language' label='Language' name='language' onChange={e => setLanguage(e.target.value)}>
+                      <option value={'Select...'}>Select Language...</option>
+                      <option value={'en'}>English</option>
+                      <option value={'es'}>Español (Spanish)</option>
+                      <option value={'fr'}>Français (French)</option>
+                      <option value={'de'}>Deutsch (German)</option>
+                      <option value={'ja'}>日本語 (Japanese)</option>
+                      <option value={'it'}>Italiano (Italian)</option>
+                      <option value={'pt'}>Português (Portuguese)</option>
+                      <option value={'ru'}>русский (Russian)</option>
+                      <option value={'nl'}>Nederlands (Dutch)</option>
+                      <option value={'tr'}>Türkçe (Turkish)</option>
+                    </Select>
+                  </div>
+                  <div id='inputButtons'>
+                    <Button type='submit' onClick={findRandomStream} halfWidth variant='contained' color='primary' className='submit'>Find A Random Stream</Button>
+                    <Button onClick={findResults} halfWidth variant='contained' color='primary' className='submit'>View Results</Button>
+                  </div>
+              </form>
               <Box mt={8}>
                   <Copyright />
               </Box>

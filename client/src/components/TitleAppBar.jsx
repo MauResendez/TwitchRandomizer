@@ -10,14 +10,9 @@ function TitleAppBar()
         <div>
             <AppBar position="static" className="appBar">
                 <Toolbar>
-                    {/* <a href="/">
-                        <Typography variant="h6">
-                            Twitch Randomizer
-                        </Typography>
-                    </a> */}
                     <Link to={{pathname: '/'}}>
                         <Typography variant="h6">
-                            Twitch Randomizer
+                            Twitch Random
                         </Typography>
                     </Link>
                 </Toolbar>

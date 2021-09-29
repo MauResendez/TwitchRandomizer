@@ -15,18 +15,15 @@ function App()
   return (
     <ThemeProvider>
       <CssBaseline style={{height: '100vh'}}>
-        <div className="App">
-          <div className="container">
+        <div className='App'>
+          <div className='container'>
             <Router>
               <TitleAppBar/>
               <Switch>
-                <Route exact path="/" component={InputForm}/>
-                <ProtectedRoute exact path="/stream" component={props => <Stream {...props}/>} />
-                <ProtectedRoute exact path="/results" component={props => <Results {...props}/>} />
+                <Route exact path='/' component={InputForm}/>
+                <ProtectedRoute exact path='/stream' component={props => <Stream {...props}/>} />
+                <ProtectedRoute exact path='/results' component={props => <Results {...props}/>} />
                 <Route component={NotFound} />
-
-                {/* <Route exact path="/stream" component={Stream}/> */}
-                {/* <Route exact path="/results" component={Results} /> */}
               </Switch>
             </Router>
           </div>   
