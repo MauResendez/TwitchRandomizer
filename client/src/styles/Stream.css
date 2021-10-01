@@ -29,3 +29,31 @@ iframe
         height: auto * 16/9 !important;
     }
 }
+
+@media (max-width: 728px)
+{
+    iframe
+    {
+        padding-top: 20px;
+        height: 800px !important;
+    }
+
+    #streamButtons
+    {
+        padding-bottom: 10px !important;
+    }
+}
+
+@media (max-width: 420px)
+{
+    iframe
+    {
+        padding-top: 20px;
+        height: 700px !important;
+    }
+
+    #streamButtons
+    {
+        padding-bottom: 10px !important;
+    }
+}

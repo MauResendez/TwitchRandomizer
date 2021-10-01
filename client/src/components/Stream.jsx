@@ -1,27 +1,14 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import axios from 'axios';
 
 import Button from '@material-ui/core/Button';
-import { Container } from '@material-ui/core';
-import { Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-
+import { Container, Grid } from '@material-ui/core';
 import Loader from "react-loader-spinner";
-
 import ReactTwitchEmbedVideo from "react-twitch-embed-video";
 
 import '../styles/Stream.css';
-
-const useStyles = makeStyles((theme) => 
-({
-  stream: 
-  {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-}));
 
 function Stream() 
 {
@@ -96,7 +83,7 @@ function Stream()
     }, [stream, loading, error])
 
     return (
-        <Grid container spacing={0} direction='column' alignItems='center' justify='center' style={{ minHeight: '90vh' }}>  
+        <Grid container spacing={0} direction='column' alignItems='center' justify='center' style={{ minHeight: '91.5vh' }}>  
             <Container component='main' center>
                 {loading && 
                     <div id="streamLoader">
