@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
+import { Box, Button, Container, Grid, Link, Select, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles';
-import Select from '@material-ui/core/Select';
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 
 import { data } from '../data/data.js'
 
@@ -116,7 +110,7 @@ function InputForm()
     const games = data
 
     return (
-        <Grid container spacing={0} direction='column' alignItems='center' justify='center' style={{ minHeight: '100vh' }}>  
+        <Grid container spacing={0} direction='column' alignItems='center' justify='center' style={{ minHeight: '91.5vh' }}>  
             { randomSubmitted && <Redirect push to={{pathname: `/stream`}}/> }
             { resultsSubmitted && <Redirect push to={{pathname: `/results`}}/> }
 
@@ -147,7 +141,7 @@ function InputForm()
                     {
                       setInputGame(inputGame);
 
-                      if (!inputGame) 
+                      if(!inputGame) 
                       {
                         setOpen(false);
                       }

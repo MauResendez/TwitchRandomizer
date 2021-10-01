@@ -1,10 +1,7 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-import { Container } from '@material-ui/core';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-import GridListTileBar from '@material-ui/core/GridListTileBar';
+import { Container, Grid, GridList, GridListTile, GridListTileBar } from '@material-ui/core';
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import { Link } from 'react-router-dom';
 import Loader from 'react-loader-spinner';
@@ -86,7 +83,7 @@ function Results(props)
     }, [])
 
     return (
-            <Fragment>
+            <Grid container spacing={0} direction='column' alignItems='center' justify='center' style={{ minHeight: '91.5vh' }}>  
                 {loading && 
                     <div id='resultsLoader'>
                         <Loader
@@ -114,7 +111,7 @@ function Results(props)
                         </div>
                     </Container>
                 }
-            </Fragment>
+            </Grid>
     )
 }
 
